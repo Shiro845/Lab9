@@ -1,17 +1,19 @@
+using System.Text.Json;
+using System.IO;
+
 namespace Lab9
 {
     public partial class Form1 : Form
     {
         long number;
 
-
         bool IsLeapYear(long year)
         {
             return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
         }
-        private void buttonCalibration()
+        private void LabelCalibration()
         {
-            label1.Location = new Point((Width/2) - label1.Width / 2, 150);
+            label1.Location = new Point((Width / 2) - label1.Width / 2, 150);
         }
 
         public Form1()
@@ -20,7 +22,8 @@ namespace Lab9
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             label1.AutoSize = true;
-            buttonCalibration();
+            listBox1.Hide();
+            LabelCalibration();
             label1.TextAlign = ContentAlignment.MiddleCenter;
             textBox1.Location = new Point(Width / 2 - textBox1.Width / 2, 225);
         }
@@ -47,7 +50,7 @@ namespace Lab9
                 return;
             }
             label1.Refresh();
-            buttonCalibration();
+            LabelCalibration();
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -57,6 +60,40 @@ namespace Lab9
         private void Form1_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            string directorypath = System.AppDomain.CurrentDomain.BaseDirectory;
+            string jsonText = File.ReadAllText($"{directorypath}\\Years.json");
+            List<int> years = JsonSerializer.Deserialize<List<int>>(jsonText);
+            if (!checkBox1.Checked)
+            {
+                textBox1.Text = "";
+                textBox1.Hide();
+                label1.Text = "Зчитано з файлу:";
+                LabelCalibration();
+                foreach (int year in years) 
+                {
+                    if (IsLeapYear(year))
+                    {
+                        listBox1.Items.Add($"{year}: Високосний рік!\n");
+                    }
+                    else
+                    {
+                        listBox1.Items.Add($"{year}: Не високосний рік!\n");
+                    }
+                }
+                listBox1.Show();
+            }
+            else
+            {
+                listBox1.Items.Clear();
+                listBox1.Hide();
+                textBox1.Show();
+                label1.Text = "Введіть рік:";
+                LabelCalibration();
+            }
         }
     }
 }
